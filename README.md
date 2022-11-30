@@ -1,6 +1,5 @@
-# Welcome to Streamlit!
+### Welcome to Sled's ROI calculator
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire. :heart:
+[Check it out Live!](https://zurferr-streamlit-example-streamlit-app-grjllc.streamlit.app/)
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+Any questions? Reach out to hi@sled.so or visit us on [sled.so](https://www.sled.so/)
