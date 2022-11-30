@@ -4,7 +4,7 @@ import streamlit as st
 """
 # Calculate Sled's ROI 
 
-This tool will help you determine the ROI of Sled 🛷 for your organization.
+This tool will help you determine the ROI of **[Sled](https://www.sled.so/) 🛷** for your organization.
 
 ---
 """
