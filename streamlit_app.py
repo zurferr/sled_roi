@@ -1,38 +1,68 @@
-from collections import namedtuple
-import altair as alt
 import math
-import pandas as pd
 import streamlit as st
 
 """
-# Welcome to Streamlit!
+# Calculate Sled's ROI 
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+This tool will help you determine the ROI of Sled 🛷 for your organization.
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
-
-In the meantime, below is an example of what you can do with just a few lines of code:
+---
 """
 
+"""
+## Value Drivers
 
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
+These are the value drivers for Sled.  Please enter the values for your organization.  
+All results are in USD / year.
+"""
 
-    Point = namedtuple('Point', 'x y')
-    data = []
+cola, colb = st.columns(2)
 
-    points_per_turn = total_points / num_turns
+with cola:
+    num_people = st.slider("Number of data professionals (engineers, analysts, leaders)", 1, 100, 15)
+    retention = st.slider("Avg. retention time in years", 1.0, 5.0, 2.0)
+    salary = st.slider("Cost of labour for 1 full-time employee", 40000, 200000, 80000)
 
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
+    """
+    #### Higher Productivity
+    """
 
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+    productivity_value = round(num_people * salary * 0.15)
+    onboarding_value = round(num_people * salary * 1/retention * 1/12)
+
+    st.metric('More effective data team', "{:,}$".format(productivity_value + onboarding_value), delta=None, delta_color="normal", help='On average data professionals save 6 hours / week (15%) because of faster troubleshooting, better change impact analysis and less duplicate and manual work. New data professionals save at least 1 month of onboarding time.')
+
+
+with colb:
+    options = [5 * 2 ** i for i in range(0, 10)]
+    revenue = st.select_slider("Revenue of your company in million USD", options=options, value=options[3]) * 1e6
+    perc_decision_m = st.slider("% of decision makers working on Snowflake data", 0.0, 1.0, 0.2)
+    num_dq_incidents = st.slider(" days per month with data quality incidents", 1, 30, 7)
+
+    """
+    #### Cost of Bad Data
+    """
+    bad_data_cost = round(revenue * perc_decision_m * num_dq_incidents / 30 * 0.15)
+    st.metric('Business opportunity cost', "{:,}$".format(bad_data_cost), delta=None, delta_color="normal", help='The business opportunity cost is the revenue that is lost because of bad data. Decision based on bad data are typically 15% less effective, e.g. inefficiently allocated marketing budget.')
+
+
+"""
+---
+
+## Investment
+"""
+# generate array of option starting from 2000 and increasing exponentially
+# by 2.0 until it reaches 500000
+options = [2000 * 2 ** i for i in range(0, 10)]
+total_points = st.select_slider("Number of analytics assets (Snowflake tables, columns, BI dashboards, ...)", options=options, value=options[3])
+price_year = round(math.sqrt(total_points) * 10) * 12
+st.metric('Sled\'s price per year', "{:,}$".format(price_year), delta=None, delta_color="normal", help=None)
+
+"""
+
+---
+## Return on Investment
+"""
+multiple = (onboarding_value + productivity_value + bad_data_cost) /(price_year)
+st.metric('ROI over lifetime', f"{round(multiple * 100)}%", delta=None, delta_color="normal", help=f"Value Drivers / Investment")
+st.write(f" {round(multiple)}x your investment in Sled with a more productive data team, trustworthy data for your organization and therefore better business decisions. 🌲")
